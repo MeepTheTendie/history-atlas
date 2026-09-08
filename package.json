@@ -1,0 +1,9 @@
+{
+  "name": "history-atlas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs history-atlas civilization-atlas-v1 public src/worker.mjs dist/worker.mjs",
+    "deploy": "npm run build && npx wrangler deploy"
+  }
+}
