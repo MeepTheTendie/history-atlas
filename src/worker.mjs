@@ -22,6 +22,15 @@ async function current(env){return snapshot(await env.PROGRESS_DB.prepare('SELEC
 export default {
  async fetch(request,env) {
   const url=new URL(request.url);
+    if (/^\/assets\/robinson\/images\/[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif)$/.test(url.pathname)) {
+      const image = await fetch("https://www.gutenberg.org/cache/epub/26042/" + url.pathname.slice("/assets/robinson/".length), {cf:{cacheTtl:86400,cacheEverything:true}});
+      if (!image.ok || !(image.headers.get("content-type") || "").startsWith("image/")) return new Response("Image unavailable", {status:502});
+      const response = new Response(image.body, image);
+      response.headers.set("cache-control","public, max-age=86400");
+      response.headers.set("x-content-type-options","nosniff");
+      return response;
+    }
+
   if(url.pathname==='/__cloud-sync.js') {
     const response=await env.ASSETS.fetch(request);const copy=new Response(response.body,response);
     copy.headers.set('cache-control','no-store');return copy;
